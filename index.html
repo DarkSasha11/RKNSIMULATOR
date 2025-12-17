@@ -3,272 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>РКН: ВЕРСИЯ 6.0 УЛЬТРА</title>
+    <title>РКН | ЦЕНТР УПРАВЛЕНИЯ FINAL</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@400;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #010409;
-            --panel: rgba(13, 17, 23, 0.95);
-            --accent: #38bdf8;
-            --danger: #f43f5e;
-            --warning: #fbbf24;
-            --success: #10b981;
-            --card-w: 160px;
-            --card-m: 10px;
-            --total-card: 180px;
+            --bg: #010409; --panel: rgba(13, 17, 23, 0.98);
+            --accent: #38bdf8; --danger: #f43f5e;
+            --warning: #fbbf24; --success: #10b981;
+            --card-w: 160px; --card-m: 10px; --step: 180px;
         }
 
         body {
-            margin: 0; padding: 0;
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: #f0f6fc;
-            display: grid;
-            grid-template-columns: 300px 1fr 320px;
-            height: 100vh;
-            overflow: hidden;
+            margin: 0; background: var(--bg); color: #e6edf3;
+            font-family: 'Segoe UI', sans-serif; display: grid;
+            grid-template-columns: 300px 1fr 320px; height: 100vh; overflow: hidden;
             background-image: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #010409 100%);
         }
 
-        /* Панели */
-        .side-panel {
-            background: var(--panel);
-            border: 1px solid rgba(56, 189, 248, 0.1);
-            display: flex; flex-direction: column;
-            padding: 20px; box-sizing: border-box; backdrop-filter: blur(15px);
-            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+        .side { background: var(--panel); border: 1px solid #30363d; padding: 20px; display: flex; flex-direction: column; backdrop-filter: blur(10px); }
+        .title { font-family: 'Orbitron'; font-size: 0.75rem; color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-bottom: 15px; letter-spacing: 2px; text-transform: uppercase; }
+        
+        #history, #chat { flex-grow: 1; overflow-y: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; scroll-behavior: smooth; }
+        .h-item { padding: 10px; margin-bottom: 10px; border-radius: 8px; background: #161b22; border-left: 5px solid; animation: slideIn 0.3s forwards; }
+        .comm { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-bottom: 10px; border-left: 2px solid var(--accent); }
+        .user { color: var(--accent); font-weight: bold; font-size: 0.75rem; display: block; margin-bottom: 4px; }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+
+        main { display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 20px; }
+        .logo { width: 110px; filter: drop-shadow(0 0 20px var(--accent)); margin-bottom: 20px; transition: 0.5s; }
+        .logo:hover { transform: rotate(360deg); }
+
+        .viewport {
+            position: relative; width: 800px; height: 200px;
+            background: #0d1117; border: 3px solid #30363d;
+            border-radius: 25px; overflow: hidden; display: flex; align-items: center;
+            box-shadow: inset 0 0 50px #000;
         }
 
-        .panel-title {
-            font-family: 'Orbitron', sans-serif; font-size: 0.8rem;
-            color: var(--accent); margin-bottom: 20px;
-            border-bottom: 2px solid var(--accent); padding-bottom: 10px;
-            text-transform: uppercase; letter-spacing: 2px;
-        }
-
-        #history-list { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; overflow-y: auto; flex-grow: 1; }
-        .history-item { margin-bottom: 12px; padding: 10px; border-radius: 8px; background: rgba(255,255,255,0.03); border-left: 4px solid; animation: slideUp 0.3s ease; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } }
-
-        #chat-box { display: flex; flex-direction: column; gap: 12px; overflow-y: auto; flex-grow: 1; padding-right: 5px; }
-        .comment { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 15px; font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .user { font-weight: bold; color: var(--accent); display: block; margin-bottom: 3px; font-size: 0.75rem; }
-
-        /* Центр */
-        main { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; position: relative; }
-        .rkn-logo { width: 100px; filter: drop-shadow(0 0 25px var(--accent)); margin-bottom: 15px; cursor: pointer; }
-
-        .roulette-viewport {
-            position: relative; width: 100%; max-width: 850px; height: 180px;
-            margin: 25px 0; background: #0d1117; border: 2px solid rgba(56, 189, 248, 0.3);
-            border-radius: 25px; display: flex; align-items: center; overflow: hidden;
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
-        }
-
-        .track { display: flex; align-items: center; }
+        .track { display: flex; will-change: transform; align-items: center; }
         .item {
-            min-width: var(--card-w); height: 130px; margin: 0 var(--card-m);
-            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 18px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: 0.3s;
+            min-width: var(--card-w); height: 150px; margin: 0 var(--card-m);
+            background: #161b22; border: 1px solid #30363d; border-radius: 20px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .item img { width: 65px; height: 65px; border-radius: 12px; margin-bottom: 10px; }
-        .item span { font-size: 0.8rem; font-weight: 700; color: #8b949e; text-transform: uppercase; }
+        .item img { width: 70px; height: 70px; border-radius: 15px; margin-bottom: 10px; pointer-events: none; }
+        .item span { font-size: 0.8rem; font-weight: 900; color: #f0f6fc; text-transform: uppercase; }
 
         .pointer {
             position: absolute; left: 50%; top: 0; bottom: 0; width: 4px;
-            background: var(--danger); transform: translateX(-50%); z-index: 20;
+            background: var(--danger); transform: translateX(-50%); z-index: 100;
             box-shadow: 0 0 20px var(--danger);
         }
 
-        .spin-btn {
-            background: var(--accent); color: #000; border: none;
-            padding: 22px 60px; font-size: 1.2rem; font-weight: 900;
-            font-family: 'Orbitron', sans-serif; border-radius: 15px;
-            cursor: pointer; box-shadow: 0 0 30px rgba(56, 189, 248, 0.4); transition: 0.3s;
+        .btn-spin {
+            margin-top: 40px; padding: 22px 70px; background: var(--accent);
+            border: none; border-radius: 15px; font-family: 'Orbitron';
+            font-weight: 900; cursor: pointer; transition: 0.3s; color: #000;
+            font-size: 1.2rem; box-shadow: 0 0 30px rgba(56, 189, 248, 0.4);
         }
-        .spin-btn:hover:not(:disabled) { transform: scale(1.05); filter: brightness(1.1); }
-        .spin-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+        .btn-spin:hover { transform: scale(1.05); }
+        .btn-spin:disabled { opacity: 0.2; transform: scale(0.95); }
 
-        /* Модалка */
-        .overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.97);
-            display: none; justify-content: center; align-items: center; z-index: 100; backdrop-filter: blur(10px);
-        }
-        .modal { background: #0d1117; padding: 45px; border-radius: 35px; border: 2px solid var(--accent); text-align: center; width: 380px; }
-        .modal img { width: 110px; height: 110px; border-radius: 22px; margin-bottom: 20px; border: 2px solid var(--accent); padding: 5px; }
-        .btn-group { display: flex; flex-direction: column; gap: 12px; margin-top: 25px; }
-        .btn { padding: 15px; border-radius: 10px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
-        .btn-ban { background: var(--danger); color: white; }
-        .btn-slow { background: var(--warning); color: black; }
-        .btn-spare { background: var(--success); color: white; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(15px); }
+        .modal { background: #0d1117; padding: 50px; border-radius: 40px; border: 2px solid var(--accent); text-align: center; width: 380px; box-shadow: 0 0 100px rgba(56, 189, 248, 0.2); }
+        .modal img { width: 120px; height: 120px; border-radius: 25px; margin-bottom: 20px; border: 3px solid var(--accent); }
+        .v-btns { display: flex; flex-direction: column; gap: 15px; margin-top: 30px; }
+        .v-btn { padding: 18px; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; font-size: 1rem; transition: 0.2s; }
+        .v-ban { background: var(--danger); color: #fff; }
+        .v-slow { background: var(--warning); color: #000; }
+        .v-safe { background: var(--success); color: #fff; }
+        .v-btn:hover { filter: brightness(1.2); transform: translateY(-3px); }
     </style>
 </head>
 <body>
 
-    <aside class="side-panel">
-        <div class="panel-title">История протоколов</div>
-        <div id="history-list"></div>
+    <aside class="side">
+        <div class="title">СИСТЕМНЫЙ ЛОГ</div>
+        <div id="history"></div>
     </aside>
 
     <main>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Roskomnadzor_logo.svg/1024px-Roskomnadzor_logo.svg.png" class="rkn-logo" onclick="location.reload()">
-        <h1 style="font-family:'Orbitron'; letter-spacing: 4px; font-size: 1.4rem; margin: 0;">RKN MAIN TERMINAL</h1>
-        <div class="roulette-viewport">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Roskomnadzor_logo.svg/1024px-Roskomnadzor_logo.svg.png" class="logo">
+        <h1 style="font-family:'Orbitron'; font-size: 1.5rem; margin:0; letter-spacing: 6px; background: linear-gradient(to right, #fff, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">RKN TERMINAL 8.0</h1>
+        <div class="viewport">
             <div class="pointer"></div>
             <div id="track" class="track"></div>
         </div>
-        <button class="spin-btn" id="spinBtn">ЗАПУСТИТЬ АНАЛИЗ</button>
+        <button class="btn-spin" id="spinBtn">НАЧАТЬ ПРОВЕРКУ</button>
     </main>
 
-    <aside class="side-panel">
-        <div class="panel-title">Чат «Голос Народа»</div>
-        <div id="chat-box"></div>
+    <aside class="side">
+        <div class="title">ОБЩЕСТВЕННЫЙ РЕЗОНАНС</div>
+        <div id="chat"></div>
     </aside>
 
     <div class="overlay" id="overlay">
         <div class="modal">
-            <img id="resImg">
-            <h2 id="resTitle" style="font-family:'Orbitron'; margin:0; font-size: 1.8rem;"></h2>
-            <div class="btn-group">
-                <button class="btn btn-ban" onclick="submitVerdict('ЗАБЛОКИРОВАН')">ЗАБЛОКИРОВАТЬ</button>
-                <button class="btn btn-slow" onclick="submitVerdict('ЗАМЕДЛЕН')">ЗАМЕДЛИТЬ</button>
-                <button class="btn btn-spare" onclick="submitVerdict('ПОМИЛОВАН')">ПОМИЛОВАТЬ</button>
+            <img id="mImg">
+            <h2 id="mTitle" style="font-family:'Orbitron'; margin:0; font-size: 2rem;"></h2>
+            <div class="v-btns">
+                <button class="v-btn v-ban" onclick="v('ЗАБЛОКИРОВАН')">ЗАБЛОКИРОВАТЬ</button>
+                <button class="v-btn v-slow" onclick="v('ЗАМЕДЛЕН')">ЗАМЕДЛИТЬ</button>
+                <button class="v-btn v-safe" onclick="v('ПОМИЛОВАН')">ПОМИЛОВАТЬ</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Чистые системные звуки
-        const sfx = {
+        const audio = {
             tick: new Audio('https://www.soundjay.com/buttons/sounds/button-50.mp3'),
             win: new Audio('https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'),
-            click: new Audio('https://www.soundjay.com/buttons/sounds/button-37.mp3'),
-            ban: new Audio('https://www.soundjay.com/mechanical/sounds/clunk-1.mp3'),         // Тяжелый удар
-            slow: new Audio('https://www.soundjay.com/buttons/sounds/button-20.mp3'),        // Цифровой бип
-            spare: new Audio('https://www.soundjay.com/clock/sounds/desk-bell-one-1.mp3')   // Колокольчик
+            ban: new Audio('https://www.soundjay.com/mechanical/sounds/clunk-1.mp3'),
+            slow: new Audio('https://www.soundjay.com/buttons/sounds/button-20.mp3'),
+            safe: new Audio('https://www.soundjay.com/clock/sounds/desk-bell-one-1.mp3')
         };
-        sfx.tick.volume = 0.2;
+        audio.tick.volume = 0.2;
 
         const apps = [
-            { name: 'YouTube', logo: 'https://cdn-icons-png.flaticon.com/512/1384/1384060.png' },
-            { name: 'Discord', logo: 'https://cdn-icons-png.flaticon.com/512/3670/3670157.png' },
-            { name: 'Steam', logo: 'https://cdn-icons-png.flaticon.com/512/512/512555.png' },
-            { name: 'Twitch', logo: 'https://cdn-icons-png.flaticon.com/512/5968/5968819.png' },
-            { name: 'Telegram', logo: 'https://cdn-icons-png.flaticon.com/512/2111/2111646.png' },
-            { name: 'TikTok', logo: 'https://cdn-icons-png.flaticon.com/512/3046/3046121.png' },
-            { name: 'Reddit', logo: 'https://cdn-icons-png.flaticon.com/512/52/52053.png' },
-            { name: 'Spotify', logo: 'https://cdn-icons-png.flaticon.com/512/174/174868.png' },
-            { name: 'Roblox', logo: 'https://cdn-icons-png.flaticon.com/512/10304/10304443.png' },
-            { name: 'GitHub', logo: 'https://cdn-icons-png.flaticon.com/512/25/25231.png' }
+            { n: 'YouTube', i: 'https://cdn-icons-png.flaticon.com/512/1384/1384060.png' },
+            { n: 'Discord', i: 'https://cdn-icons-png.flaticon.com/512/3670/3670157.png' },
+            { n: 'Steam', i: 'https://cdn-icons-png.flaticon.com/512/512/512555.png' },
+            { n: 'Twitch', i: 'https://cdn-icons-png.flaticon.com/512/5968/5968819.png' },
+            { n: 'Telegram', i: 'https://cdn-icons-png.flaticon.com/512/2111/2111646.png' },
+            { n: 'TikTok', i: 'https://cdn-icons-png.flaticon.com/512/3046/3046121.png' },
+            { n: 'Spotify', i: 'https://cdn-icons-png.flaticon.com/512/174/174868.png' },
+            { n: 'Reddit', i: 'https://cdn-icons-png.flaticon.com/512/52/52053.png' },
+            { n: 'GitHub', i: 'https://cdn-icons-png.flaticon.com/512/25/25231.png' },
+            { n: 'Roblox', i: 'https://cdn-icons-png.flaticon.com/512/10304/10304443.png' }
         ];
 
-        const chatPhrases = {
-            'ЗАБЛОКИРОВАН': [
-                'Опять всё ломают!', 'Прощай, любимый сервис...', 'VPN: "Мое время пришло"', 'Жесть, за что?', 
-                'Пойду книжку читать теперь', 'РКН, вы чего?', 'Минус один...', 'В каменный век катимся',
-                'Эй! У меня там подписка была!', 'Ну всё, расходимся.'
-            ],
-            'ЗАМЕДЛЕН': [
-                '144p — мой новый лучший друг', 'Грузит как в 2005-м', 'Замедление — это новая блокировка?', 
-                'Слайд-шоу заказывали?', 'Буду смотреть в качестве "картошка"', 'Терпим, пацаны', 
-                'Всё лагает!', 'Это чтобы мы больше гуляли?', 'Улитка одобряет этот интернет'
-            ],
-            'ПОМИЛОВАН': [
-                'УРАААА!', 'Хоть что-то адекватное!', 'РКН сегодня добрый', 'Лучший день!', 
-                'Живём, мужики!', 'Спасибо, помиловали!', 'Чудо свершилось!', 'Пойду отмечу это!',
-                'Справедливость есть!', 'Я уж испугался.'
-            ]
+        const phrases = {
+            'ЗАБЛОКИРОВАН': ['За что?!', 'VPN: "Я готов"', 'Прощай!', 'Опять...', 'Жестко.', 'Минус инет', 'РКН, зачем?', 'Помянем...', 'Ухожу в оффлайн', 'Свобода, пока.'],
+            'ЗАМЕДЛЕН': ['144p навсегда', 'Грузит час...', 'Улитка и то быстрее', 'Слайд-шоу!', 'Бесит лаги!', 'Зачем?', 'Еле пашет', 'VPN в помощь', 'Аааа лагает!', 'Терпим.'],
+            'ПОМИЛОВАН': ['УРААА!', 'Живем!', 'РКН лучший!', 'Чудо!', 'Спасибо!', 'Справедливо', 'Кайф!', 'Наконец-то', 'Праздник!', 'Есссс!']
         };
 
         const track = document.getElementById('track');
         const spinBtn = document.getElementById('spinBtn');
-        const cardStep = 180; // card-w + card-m * 2
+        const step = 180;
 
-        function init() {
-            let html = '';
-            for(let i=0; i<50; i++) {
+        function build() {
+            let h = ''; 
+            for(let i=0; i<80; i++) {
                 apps.forEach(a => {
-                    html += `<div class="item"><img src="${a.logo}"><span>${a.name}</span></div>`;
+                    h += `<div class="item"><img src="${a.i}"><span>${a.n}</span></div>`;
                 });
             }
-            track.innerHTML = html;
-            gsap.set(track, { x: -40 * cardStep });
-            updateHistoryUI();
+            track.innerHTML = h;
+            gsap.set(track, { x: -40 * step });
         }
 
-        spinBtn.addEventListener('click', () => {
-            sfx.click.play();
-            sfx.tick.play(); sfx.tick.pause();
+        spinBtn.onclick = () => {
+            audio.tick.play(); audio.tick.pause(); // Прогрев аудио
             spinBtn.disabled = true;
-
-            const viewportW = document.querySelector('.roulette-viewport').offsetWidth;
-            const targetIdx = 80 + Math.floor(Math.random() * apps.length);
             
-            // ТОЧНАЯ ФОРМУЛА: Центр экрана минус позиция карточки минус половина её ширины
-            const finalX = (viewportW / 2) - (targetIdx * cardStep) - (cardStep / 2);
+            const target = 100 + Math.floor(Math.random() * apps.length);
+            // ТОЧНЫЙ РАСЧЕТ: Половина вьюпорта (400) - (номер карточки * ширину) - (половина карточки)
+            const x = 400 - (target * step) - (step / 2);
 
-            let lastT = 0;
+            let lastIdx = 0;
             gsap.to(track, {
-                x: finalX, duration: 8, ease: "power4.out",
-                onUpdate: function() {
+                x: x, duration: 8, ease: "power4.out",
+                onUpdate: () => {
                     let curX = gsap.getProperty(track, "x");
-                    // Считаем индекс карточки под стрелкой в реальном времени
-                    let curT = Math.round(Math.abs((curX - viewportW/2 + cardStep/2) / cardStep));
-                    if(curT !== lastT) {
-                        sfx.tick.currentTime = 0;
-                        sfx.tick.play().catch(()=>{});
-                        lastT = curT;
+                    let curIdx = Math.round(Math.abs((curX - 400 + step/2) / step));
+                    if(curIdx !== lastIdx) {
+                        audio.tick.currentTime = 0; audio.tick.play().catch(()=>{});
+                        lastIdx = curIdx;
                     }
                 },
                 onComplete: () => {
-                    sfx.win.play();
-                    const app = apps[targetIdx % apps.length];
-                    document.getElementById('resImg').src = app.logo;
-                    document.getElementById('resTitle').innerText = app.name;
+                    audio.win.play();
+                    const app = apps[target % apps.length];
+                    document.getElementById('mImg').src = app.i;
+                    document.getElementById('mTitle').innerText = app.n;
                     document.getElementById('overlay').style.display = 'flex';
                 }
             });
-        });
+        };
 
-        function submitVerdict(verdict) {
-            if(verdict === 'ЗАБЛОКИРОВАН') sfx.ban.play();
-            if(verdict === 'ЗАМЕДЛЕН') sfx.slow.play();
-            if(verdict === 'ПОМИЛОВАН') sfx.spare.play();
+        function v(type) {
+            if(type === 'ЗАБЛОКИРОВАН') audio.ban.play();
+            if(type === 'ЗАМЕДЛЕН') audio.slow.play();
+            if(type === 'ПОМИЛОВАН') audio.safe.play();
 
-            const appName = document.getElementById('resTitle').innerText;
-            const history = JSON.parse(localStorage.getItem('rkn_v6_h') || '[]');
-            history.unshift({ app: appName, status: verdict, time: new Date().toLocaleTimeString() });
-            localStorage.setItem('rkn_v6_h', JSON.stringify(history.slice(0, 20)));
+            const name = document.getElementById('mTitle').innerText;
+            const hist = document.getElementById('history');
+            const chat = document.getElementById('chat');
 
-            const chat = document.getElementById('chat-box');
-            const pool = chatPhrases[verdict];
-            for(let i=0; i<4; i++) {
+            const color = type === 'ЗАБЛОКИРОВАН' ? 'var(--danger)' : type === 'ЗАМЕДЛЕН' ? 'var(--warning)' : 'var(--success)';
+            hist.insertAdjacentHTML('afterbegin', `<div class="h-item" style="border-color:${color}"><b>${name}</b><br><span style="color:${color}">${type}</span></div>`);
+            
+            for(let i=0; i<6; i++) {
                 setTimeout(() => {
-                    const div = document.createElement('div');
-                    div.className = 'comment';
-                    div.innerHTML = `<span class="user">User_${Math.floor(Math.random()*9999)}</span>${pool[Math.floor(Math.random()*pool.length)]}`;
-                    chat.prepend(div);
-                    if(chat.childNodes.length > 20) chat.lastChild.remove();
-                }, i * 350);
+                    const pool = phrases[type];
+                    const p = pool[Math.floor(Math.random()*pool.length)];
+                    chat.insertAdjacentHTML('afterbegin', `<div class="comm"><span class="user">Гражданин_${Math.floor(Math.random()*9999)}</span>${p}</div>`);
+                    if(chat.childNodes.length > 30) chat.lastChild.remove();
+                }, i * 300);
             }
 
             document.getElementById('overlay').style.display = 'none';
-            updateHistoryUI();
-            gsap.to(track, { x: -40 * cardStep, duration: 1.5, ease: "power2.inOut", onComplete: () => spinBtn.disabled = false });
+            gsap.to(track, { x: -40 * step, duration: 1, onComplete: () => spinBtn.disabled = false });
         }
 
-        function updateHistoryUI() {
-            const list = document.getElementById('history-list');
-            const data = JSON.parse(localStorage.getItem('rkn_v6_h') || '[]');
-            list.innerHTML = data.map(h => {
-                let color = h.status === 'ЗАБЛОКИРОВАН' ? 'var(--danger)' : h.status === 'ЗАМЕДЛЕН' ? 'var(--warning)' : 'var(--success)';
-                return `<div class="history-item" style="border-color: ${color}"><b>${h.app}</b><br><span style="color:${color}">${h.status}</span> <small style="opacity:0.4; float:right">${h.time}</small></div>`;
-            }).join('');
-        }
-
-        init();
+        build();
     </script>
 </body>
 </html>
