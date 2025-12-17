@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>РКН: ТОЧНЫЙ ТЕРМИНАЛ</title>
+    <title>РКН: ВЕРСИЯ 6.0 УЛЬТРА</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@400;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
@@ -16,7 +16,7 @@
             --success: #10b981;
             --card-w: 160px;
             --card-m: 10px;
-            --total-w: 180px; /* card-w + card-m * 2 */
+            --total-card: 180px;
         }
 
         body {
@@ -25,75 +25,81 @@
             background: var(--bg);
             color: #f0f6fc;
             display: grid;
-            grid-template-columns: 280px 1fr 300px;
+            grid-template-columns: 300px 1fr 320px;
             height: 100vh;
             overflow: hidden;
             background-image: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #010409 100%);
         }
 
+        /* Панели */
         .side-panel {
             background: var(--panel);
             border: 1px solid rgba(56, 189, 248, 0.1);
             display: flex; flex-direction: column;
-            padding: 20px; box-sizing: border-box; backdrop-filter: blur(10px);
+            padding: 20px; box-sizing: border-box; backdrop-filter: blur(15px);
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
         }
 
         .panel-title {
             font-family: 'Orbitron', sans-serif; font-size: 0.8rem;
             color: var(--accent); margin-bottom: 20px;
-            border-bottom: 1px solid var(--accent); padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent); padding-bottom: 10px;
             text-transform: uppercase; letter-spacing: 2px;
         }
 
-        #history-list { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; overflow-y: auto; }
-        .history-item { margin-bottom: 10px; padding: 8px; border-radius: 5px; background: rgba(255,255,255,0.03); border-left: 3px solid; }
+        #history-list { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; overflow-y: auto; flex-grow: 1; }
+        .history-item { margin-bottom: 12px; padding: 10px; border-radius: 8px; background: rgba(255,255,255,0.03); border-left: 4px solid; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } }
 
-        #chat-box { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
-        .comment { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; font-size: 0.8rem; animation: slideIn 0.3s ease; }
-        .user { font-weight: bold; color: var(--accent); display: block; margin-bottom: 2px; }
+        #chat-box { display: flex; flex-direction: column; gap: 12px; overflow-y: auto; flex-grow: 1; padding-right: 5px; }
+        .comment { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 15px; font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .user { font-weight: bold; color: var(--accent); display: block; margin-bottom: 3px; font-size: 0.75rem; }
 
-        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } }
-
-        main { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        .rkn-logo { width: 80px; filter: drop-shadow(0 0 20px var(--accent)); margin-bottom: 10px; }
+        /* Центр */
+        main { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; position: relative; }
+        .rkn-logo { width: 100px; filter: drop-shadow(0 0 25px var(--accent)); margin-bottom: 15px; cursor: pointer; }
 
         .roulette-viewport {
-            position: relative; width: 100%; max-width: 800px; height: 180px;
-            margin: 30px 0; background: #0d1117; border: 2px solid rgba(56, 189, 248, 0.3);
-            border-radius: 20px; display: flex; align-items: center; overflow: hidden;
+            position: relative; width: 100%; max-width: 850px; height: 180px;
+            margin: 25px 0; background: #0d1117; border: 2px solid rgba(56, 189, 248, 0.3);
+            border-radius: 25px; display: flex; align-items: center; overflow: hidden;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
         }
 
         .track { display: flex; align-items: center; }
         .item {
             min-width: var(--card-w); height: 130px; margin: 0 var(--card-m);
             background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border-radius: 18px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: 0.3s;
         }
-        .item img { width: 60px; height: 60px; margin-bottom: 8px; border-radius: 10px; }
+        .item img { width: 65px; height: 65px; border-radius: 12px; margin-bottom: 10px; }
+        .item span { font-size: 0.8rem; font-weight: 700; color: #8b949e; text-transform: uppercase; }
 
         .pointer {
             position: absolute; left: 50%; top: 0; bottom: 0; width: 4px;
             background: var(--danger); transform: translateX(-50%); z-index: 20;
-            box-shadow: 0 0 15px var(--danger);
+            box-shadow: 0 0 20px var(--danger);
         }
 
         .spin-btn {
             background: var(--accent); color: #000; border: none;
-            padding: 20px 50px; font-size: 1.1rem; font-weight: 900;
-            font-family: 'Orbitron', sans-serif; border-radius: 12px;
-            cursor: pointer; box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); transition: 0.3s;
+            padding: 22px 60px; font-size: 1.2rem; font-weight: 900;
+            font-family: 'Orbitron', sans-serif; border-radius: 15px;
+            cursor: pointer; box-shadow: 0 0 30px rgba(56, 189, 248, 0.4); transition: 0.3s;
         }
         .spin-btn:hover:not(:disabled) { transform: scale(1.05); filter: brightness(1.1); }
-        .spin-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .spin-btn:disabled { opacity: 0.2; cursor: not-allowed; }
 
+        /* Модалка */
         .overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            display: none; justify-content: center; align-items: center; z-index: 100;
+            position: fixed; inset: 0; background: rgba(0,0,0,0.97);
+            display: none; justify-content: center; align-items: center; z-index: 100; backdrop-filter: blur(10px);
         }
-        .modal { background: #0d1117; padding: 40px; border-radius: 30px; border: 2px solid var(--accent); text-align: center; width: 350px; }
-        .modal img { width: 100px; height: 100px; border-radius: 20px; margin-bottom: 15px; border: 2px solid var(--accent); }
-        .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
-        .btn { padding: 12px; border-radius: 8px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; }
+        .modal { background: #0d1117; padding: 45px; border-radius: 35px; border: 2px solid var(--accent); text-align: center; width: 380px; }
+        .modal img { width: 110px; height: 110px; border-radius: 22px; margin-bottom: 20px; border: 2px solid var(--accent); padding: 5px; }
+        .btn-group { display: flex; flex-direction: column; gap: 12px; margin-top: 25px; }
+        .btn { padding: 15px; border-radius: 10px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
         .btn-ban { background: var(--danger); color: white; }
         .btn-slow { background: var(--warning); color: black; }
         .btn-spare { background: var(--success); color: white; }
@@ -102,29 +108,29 @@
 <body>
 
     <aside class="side-panel">
-        <div class="panel-title">Системный протокол</div>
+        <div class="panel-title">История протоколов</div>
         <div id="history-list"></div>
     </aside>
 
     <main>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Roskomnadzor_logo.svg/1024px-Roskomnadzor_logo.svg.png" class="rkn-logo">
-        <h1 style="font-family:'Orbitron'; font-size: 1.2rem; letter-spacing: 2px;">RKN TERMINAL v5.1</h1>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Roskomnadzor_logo.svg/1024px-Roskomnadzor_logo.svg.png" class="rkn-logo" onclick="location.reload()">
+        <h1 style="font-family:'Orbitron'; letter-spacing: 4px; font-size: 1.4rem; margin: 0;">RKN MAIN TERMINAL</h1>
         <div class="roulette-viewport">
             <div class="pointer"></div>
             <div id="track" class="track"></div>
         </div>
-        <button class="spin-btn" id="spinBtn">НАЧАТЬ СКАНИРОВАНИЕ</button>
+        <button class="spin-btn" id="spinBtn">ЗАПУСТИТЬ АНАЛИЗ</button>
     </main>
 
     <aside class="side-panel">
-        <div class="panel-title">Реакция сети</div>
+        <div class="panel-title">Чат «Голос Народа»</div>
         <div id="chat-box"></div>
     </aside>
 
     <div class="overlay" id="overlay">
         <div class="modal">
             <img id="resImg">
-            <h2 id="resTitle" style="font-family:'Orbitron'; margin:0"></h2>
+            <h2 id="resTitle" style="font-family:'Orbitron'; margin:0; font-size: 1.8rem;"></h2>
             <div class="btn-group">
                 <button class="btn btn-ban" onclick="submitVerdict('ЗАБЛОКИРОВАН')">ЗАБЛОКИРОВАТЬ</button>
                 <button class="btn btn-slow" onclick="submitVerdict('ЗАМЕДЛЕН')">ЗАМЕДЛИТЬ</button>
@@ -134,16 +140,16 @@
     </div>
 
     <script>
-        // Звуковая база
+        // Чистые системные звуки
         const sfx = {
             tick: new Audio('https://www.soundjay.com/buttons/sounds/button-50.mp3'),
             win: new Audio('https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'),
             click: new Audio('https://www.soundjay.com/buttons/sounds/button-37.mp3'),
-            ban: new Audio('https://assets.mixkit.co/active_storage/sfx/212/212-preview.mp3'),    // Тяжелый удар
-            slow: new Audio('https://assets.mixkit.co/active_storage/sfx/123/123-preview.mp3'),   // Искажение
-            spare: new Audio('https://assets.mixkit.co/active_storage/sfx/1831/1831-preview.mp3') // Колокольчик
+            ban: new Audio('https://www.soundjay.com/mechanical/sounds/clunk-1.mp3'),         // Тяжелый удар
+            slow: new Audio('https://www.soundjay.com/buttons/sounds/button-20.mp3'),        // Цифровой бип
+            spare: new Audio('https://www.soundjay.com/clock/sounds/desk-bell-one-1.mp3')   // Колокольчик
         };
-        sfx.tick.volume = 0.3;
+        sfx.tick.volume = 0.2;
 
         const apps = [
             { name: 'YouTube', logo: 'https://cdn-icons-png.flaticon.com/512/1384/1384060.png' },
@@ -153,51 +159,63 @@
             { name: 'Telegram', logo: 'https://cdn-icons-png.flaticon.com/512/2111/2111646.png' },
             { name: 'TikTok', logo: 'https://cdn-icons-png.flaticon.com/512/3046/3046121.png' },
             { name: 'Reddit', logo: 'https://cdn-icons-png.flaticon.com/512/52/52053.png' },
-            { name: 'Spotify', logo: 'https://cdn-icons-png.flaticon.com/512/174/174868.png' }
+            { name: 'Spotify', logo: 'https://cdn-icons-png.flaticon.com/512/174/174868.png' },
+            { name: 'Roblox', logo: 'https://cdn-icons-png.flaticon.com/512/10304/10304443.png' },
+            { name: 'GitHub', logo: 'https://cdn-icons-png.flaticon.com/512/25/25231.png' }
         ];
 
         const chatPhrases = {
-            'ЗАБЛОКИРОВАН': ['За что?!', 'Только не это...', 'Верните инет!', 'Жёстко.', 'Помянем.'],
-            'ЗАМЕДЛЕН': ['Опять лаги...', 'Ну хоть грузит', 'VPN выручай', 'Слайд-шоу какое-то', 'Терпимо'],
-            'ПОМИЛОВАН': ['УРААА!', 'Живём!', 'Спасибо, босс!', 'Лучшее решение', 'Справедливо']
+            'ЗАБЛОКИРОВАН': [
+                'Опять всё ломают!', 'Прощай, любимый сервис...', 'VPN: "Мое время пришло"', 'Жесть, за что?', 
+                'Пойду книжку читать теперь', 'РКН, вы чего?', 'Минус один...', 'В каменный век катимся',
+                'Эй! У меня там подписка была!', 'Ну всё, расходимся.'
+            ],
+            'ЗАМЕДЛЕН': [
+                '144p — мой новый лучший друг', 'Грузит как в 2005-м', 'Замедление — это новая блокировка?', 
+                'Слайд-шоу заказывали?', 'Буду смотреть в качестве "картошка"', 'Терпим, пацаны', 
+                'Всё лагает!', 'Это чтобы мы больше гуляли?', 'Улитка одобряет этот интернет'
+            ],
+            'ПОМИЛОВАН': [
+                'УРАААА!', 'Хоть что-то адекватное!', 'РКН сегодня добрый', 'Лучший день!', 
+                'Живём, мужики!', 'Спасибо, помиловали!', 'Чудо свершилось!', 'Пойду отмечу это!',
+                'Справедливость есть!', 'Я уж испугался.'
+            ]
         };
 
         const track = document.getElementById('track');
         const spinBtn = document.getElementById('spinBtn');
-        const cardW = 180; // (160 + 10 + 10)
+        const cardStep = 180; // card-w + card-m * 2
 
         function init() {
             let html = '';
-            for(let i=0; i<40; i++) {
+            for(let i=0; i<50; i++) {
                 apps.forEach(a => {
                     html += `<div class="item"><img src="${a.logo}"><span>${a.name}</span></div>`;
                 });
             }
             track.innerHTML = html;
-            // Стартовое смещение: ровно на начало ленты (но с запасом слева)
-            gsap.set(track, { x: -30 * cardW });
+            gsap.set(track, { x: -40 * cardStep });
             updateHistoryUI();
         }
 
         spinBtn.addEventListener('click', () => {
             sfx.click.play();
-            sfx.tick.play(); sfx.tick.pause(); // Прогрев
+            sfx.tick.play(); sfx.tick.pause();
             spinBtn.disabled = true;
 
             const viewportW = document.querySelector('.roulette-viewport').offsetWidth;
-            const targetIdx = 60 + Math.floor(Math.random() * apps.length);
+            const targetIdx = 80 + Math.floor(Math.random() * apps.length);
             
-            // МАТЕМАТИЧЕСКИЙ РАСЧЕТ ОСТАНОВКИ (Точно под стрелку)
-            // Центр вьюпорта - (позиция элемента) - (половина ширины элемента)
-            const finalX = (viewportW / 2) - (targetIdx * cardW) - (cardW / 2);
+            // ТОЧНАЯ ФОРМУЛА: Центр экрана минус позиция карточки минус половина её ширины
+            const finalX = (viewportW / 2) - (targetIdx * cardStep) - (cardStep / 2);
 
             let lastT = 0;
             gsap.to(track, {
-                x: finalX, duration: 7, ease: "power4.out",
+                x: finalX, duration: 8, ease: "power4.out",
                 onUpdate: function() {
                     let curX = gsap.getProperty(track, "x");
-                    // Считаем индекс относительно центральной линии
-                    let curT = Math.floor(Math.abs((curX - viewportW/2) / cardW));
+                    // Считаем индекс карточки под стрелкой в реальном времени
+                    let curT = Math.round(Math.abs((curX - viewportW/2 + cardStep/2) / cardStep));
                     if(curT !== lastT) {
                         sfx.tick.currentTime = 0;
                         sfx.tick.play().catch(()=>{});
@@ -215,40 +233,38 @@
         });
 
         function submitVerdict(verdict) {
-            // Звук вердикта
             if(verdict === 'ЗАБЛОКИРОВАН') sfx.ban.play();
             if(verdict === 'ЗАМЕДЛЕН') sfx.slow.play();
             if(verdict === 'ПОМИЛОВАН') sfx.spare.play();
 
             const appName = document.getElementById('resTitle').innerText;
-            const history = JSON.parse(localStorage.getItem('rkn_h') || '[]');
+            const history = JSON.parse(localStorage.getItem('rkn_v6_h') || '[]');
             history.unshift({ app: appName, status: verdict, time: new Date().toLocaleTimeString() });
-            localStorage.setItem('rkn_h', JSON.stringify(history.slice(0, 15)));
+            localStorage.setItem('rkn_v6_h', JSON.stringify(history.slice(0, 20)));
 
-            // Чат
             const chat = document.getElementById('chat-box');
-            for(let i=0; i<3; i++) {
+            const pool = chatPhrases[verdict];
+            for(let i=0; i<4; i++) {
                 setTimeout(() => {
                     const div = document.createElement('div');
                     div.className = 'comment';
-                    div.innerHTML = `<span class="user">User_${Math.floor(Math.random()*999)}</span>${chatPhrases[verdict][Math.floor(Math.random()*5)]}`;
+                    div.innerHTML = `<span class="user">User_${Math.floor(Math.random()*9999)}</span>${pool[Math.floor(Math.random()*pool.length)]}`;
                     chat.prepend(div);
-                }, i * 400);
+                    if(chat.childNodes.length > 20) chat.lastChild.remove();
+                }, i * 350);
             }
 
             document.getElementById('overlay').style.display = 'none';
             updateHistoryUI();
-            
-            // Возврат рулетки
-            gsap.to(track, { x: -30 * cardW, duration: 1.5, ease: "power2.inOut", onComplete: () => spinBtn.disabled = false });
+            gsap.to(track, { x: -40 * cardStep, duration: 1.5, ease: "power2.inOut", onComplete: () => spinBtn.disabled = false });
         }
 
         function updateHistoryUI() {
             const list = document.getElementById('history-list');
-            const data = JSON.parse(localStorage.getItem('rkn_h') || '[]');
+            const data = JSON.parse(localStorage.getItem('rkn_v6_h') || '[]');
             list.innerHTML = data.map(h => {
                 let color = h.status === 'ЗАБЛОКИРОВАН' ? 'var(--danger)' : h.status === 'ЗАМЕДЛЕН' ? 'var(--warning)' : 'var(--success)';
-                return `<div class="history-item" style="border-color: ${color}"><b>${h.app}</b>: ${h.status}<br><small style="opacity:0.5">${h.time}</small></div>`;
+                return `<div class="history-item" style="border-color: ${color}"><b>${h.app}</b><br><span style="color:${color}">${h.status}</span> <small style="opacity:0.4; float:right">${h.time}</small></div>`;
             }).join('');
         }
 
