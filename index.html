@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>РКН | ЦЕНТР УПРАВЛЕНИЯ БЛОКИРОВКАМИ</title>
+    <title>РКН | ГЛОБАЛЬНЫЙ ТЕРМИНАЛ</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #010409;
-            --panel: rgba(13, 17, 23, 0.95);
+            --panel: rgba(13, 17, 23, 0.98);
             --accent: #38bdf8;
             --danger: #f43f5e;
             --warning: #fbbf24;
+            --success: #10b981;
             --text: #f0f6fc;
-            --card-w: 160px; /* Ширина карточки */
-            --card-m: 10px;  /* Отступ */
+            --card-w: 160px;
+            --card-m: 10px;
         }
 
         body {
@@ -25,192 +26,73 @@
             color: var(--text);
             display: flex; flex-direction: column; align-items: center;
             min-height: 100vh; overflow: hidden;
-            background-image: 
-                radial-gradient(circle at 50% 0%, #161b22, transparent),
-                repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(56, 189, 248, 0.02) 50px);
+            background-image: radial-gradient(circle at 50% 0%, #1e1b4b, transparent);
         }
 
-        header {
-            text-align: center;
-            padding: 40px 20px;
-            z-index: 10;
-        }
-
-        /* Место для твоего логотипа Роскомнадзора */
-        .rkn-logo-custom {
-            width: 100px;
-            height: 100px;
-            margin-bottom: 15px;
-            filter: drop-shadow(0 0 15px var(--accent));
-            /* Если хочешь вставить свою картинку, добавь в тег img в HTML ниже */
-        }
-
-        h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.2rem;
-            letter-spacing: 5px;
-            margin: 0;
-            text-transform: uppercase;
-            background: linear-gradient(to bottom, #fff, var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        header { text-align: center; padding: 30px 20px; z-index: 10; }
+        .rkn-logo { width: 90px; filter: drop-shadow(0 0 15px var(--accent)); margin-bottom: 10px; }
+        h1 { font-family: 'Orbitron', sans-serif; font-size: 2rem; letter-spacing: 5px; margin: 0; text-transform: uppercase; background: linear-gradient(to bottom, #fff, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
         /* Рулетка */
         .roulette-viewport {
-            position: relative;
-            width: 100%;
-            max-width: 900px;
-            height: 200px;
-            margin: 30px 0;
-            background: var(--panel);
-            border: 1px solid rgba(56, 189, 248, 0.2);
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            overflow: hidden;
+            position: relative; width: 100%; max-width: 1000px; height: 200px;
+            margin: 20px 0; background: var(--panel); border: 1px solid rgba(56, 189, 248, 0.2);
+            border-radius: 30px; display: flex; align-items: center; overflow: hidden;
             box-shadow: 0 20px 60px rgba(0,0,0,0.8);
         }
 
-        .track {
-            display: flex;
-            align-items: center;
-            will-change: transform;
-        }
+        .track { display: flex; align-items: center; will-change: transform; }
 
         .item {
-            min-width: var(--card-w);
-            height: 150px;
-            margin: 0 var(--card-m);
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            border-radius: 24px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            box-sizing: border-box;
+            min-width: var(--card-w); height: 150px; margin: 0 var(--card-m);
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
-        .item img {
-            width: 70px;
-            height: 70px;
-            object-fit: contain;
-            border-radius: 14px;
-            margin-bottom: 10px;
-        }
+        .item img { width: 70px; height: 70px; border-radius: 14px; margin-bottom: 10px; object-fit: contain; }
+        .item span { font-size: 0.75rem; font-weight: 800; color: #8b949e; text-transform: uppercase; text-align: center; padding: 0 5px; }
 
-        .item span {
-            font-size: 0.8rem;
-            font-weight: 800;
-            color: #8b949e;
-            text-transform: uppercase;
-        }
-
-        /* Центральная линия-указатель */
         .pointer {
-            position: absolute;
-            left: 50%;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: var(--danger);
-            transform: translateX(-50%);
-            z-index: 20;
+            position: absolute; left: 50%; top: 0; bottom: 0; width: 4px;
+            background: var(--danger); transform: translateX(-50%); z-index: 20;
             box-shadow: 0 0 20px var(--danger);
         }
 
-        .pointer::before, .pointer::after {
-            content: '';
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-        }
-        .pointer::before { top: 0; border-top: 15px solid var(--danger); }
-        .pointer::after { bottom: 0; border-bottom: 15px solid var(--danger); }
-
-        /* Кнопка запуска */
+        /* Кнопка */
         .spin-btn {
-            background: var(--accent);
-            color: #010409;
-            border: none;
-            padding: 22px 70px;
-            font-size: 1.3rem;
-            font-weight: 900;
-            font-family: 'Orbitron', sans-serif;
-            border-radius: 16px;
-            cursor: pointer;
-            box-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            margin-bottom: 40px;
+            background: var(--accent); color: #010409; border: none;
+            padding: 20px 60px; font-size: 1.3rem; font-weight: 900;
+            font-family: 'Orbitron', sans-serif; border-radius: 16px;
+            cursor: pointer; box-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
+            transition: all 0.3s; margin-bottom: 30px;
         }
-
-        .spin-btn:hover { transform: scale(1.05) translateY(-3px); filter: brightness(1.1); }
-        .spin-btn:active { transform: scale(0.95); }
+        .spin-btn:hover { transform: scale(1.05); filter: brightness(1.1); }
         .spin-btn:disabled { opacity: 0.5; cursor: wait; }
 
-        /* Модальное окно результата */
+        /* Модалка */
         .overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.92);
-            backdrop-filter: blur(15px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(15px); display: none; justify-content: center; align-items: center; z-index: 100;
         }
+        .modal { background: #0d1117; padding: 40px; border-radius: 35px; border: 2px solid var(--accent); text-align: center; width: 420px; }
+        .modal img { width: 110px; height: 110px; border-radius: 25px; margin-bottom: 15px; border: 2px solid var(--accent); }
 
-        .modal {
-            background: #0d1117;
-            padding: 50px;
-            border-radius: 35px;
-            border: 2px solid var(--accent);
-            text-align: center;
-            width: 380px;
-            box-shadow: 0 0 80px rgba(56, 189, 248, 0.2);
-        }
-
-        .modal img {
-            width: 120px;
-            height: 120px;
-            border-radius: 25px;
-            margin-bottom: 20px;
-            border: 3px solid var(--accent);
-            padding: 5px;
-        }
-
-        .btn-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        .btn {
-            padding: 18px;
-            border-radius: 12px;
-            border: none;
-            font-weight: 900;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: 0.2s;
-            text-transform: uppercase;
-        }
-
+        .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 25px; }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn { padding: 15px; border-radius: 12px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; font-size: 0.9rem; }
+        
         .btn-ban { background: var(--danger); color: white; }
         .btn-slow { background: var(--warning); color: #000; }
-        .btn:hover { filter: brightness(1.2); transform: translateY(-2px); }
-
+        .btn-spare { background: var(--success); color: white; margin-top: 5px; }
+        
+        .btn:hover { filter: brightness(1.2); }
     </style>
 </head>
 <body>
 
     <header>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Roskomnadzor_logo.svg/1024px-Roskomnadzor_logo.svg.png" class="rkn-logo-custom">
-        <h1>TERMINAL RKN</h1>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Roskomnadzor_logo.svg/1024px-Roskomnadzor_logo.svg.png" class="rkn-logo">
+        <h1>ТЕРМИНАЛ 3.0</h1>
     </header>
 
     <div class="roulette-viewport">
@@ -218,113 +100,104 @@
         <div class="track" id="track"></div>
     </div>
 
-    <button class="spin-btn" id="spinBtn">ЗАПУСТИТЬ ВЫБОР</button>
+    <button class="spin-btn" id="spinBtn">ЗАПУСТИТЬ ПРОВЕРКУ</button>
 
     <div class="overlay" id="overlay">
         <div class="modal" id="modal">
             <img src="" id="resImg">
             <h2 id="resTitle" style="margin:0; font-family:'Orbitron';"></h2>
-            <p style="color:#8b949e; margin-top:10px;">ВЫБЕРИТЕ МЕРУ ПРЕСЕЧЕНИЯ</p>
+            <p style="color:#8b949e; font-size: 0.9rem;">Объект прошел автоматический анализ</p>
             <div class="btn-group">
-                <button class="btn btn-ban" id="banBtn">ЗАПРЕТИТЬ</button>
-                <button class="btn btn-slow" id="slowBtn">ЗАМЕДЛИТЬ</button>
+                <div class="row">
+                    <button class="btn btn-ban" onclick="location.reload()">ЗАПРЕТИТЬ</button>
+                    <button class="btn btn-slow" onclick="location.reload()">ЗАМЕДЛИТЬ</button>
+                </div>
+                <button class="btn btn-spare" onclick="location.reload()">ПОМИЛОВАТЬ</button>
             </div>
         </div>
     </div>
 
     <script>
-        // ЗВУКИ (Современные SFX)
-        const sfx = {
-            tick: new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3'),
-            win: new Audio('https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3'),
-            click: new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3')
-        };
-        sfx.tick.volume = 0.3;
+        // Звуки
+        const sfxTick = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3');
+        const sfxWin = new Audio('https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3');
+        const sfxClick = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
+        sfxTick.volume = 0.3;
 
+        // Расширенный список приложений
         const apps = [
             { name: 'YouTube', logo: 'https://cdn-icons-png.flaticon.com/512/1384/1384060.png' },
             { name: 'Discord', logo: 'https://cdn-icons-png.flaticon.com/512/3670/3670157.png' },
             { name: 'Steam', logo: 'https://cdn-icons-png.flaticon.com/512/512/512555.png' },
             { name: 'Instagram', logo: 'https://cdn-icons-png.flaticon.com/512/2111/2111463.png' },
             { name: 'Twitch', logo: 'https://cdn-icons-png.flaticon.com/512/5968/5968819.png' },
-            { name: 'X (Twitter)', logo: 'https://cdn-icons-png.flaticon.com/512/733/733579.png' },
             { name: 'Telegram', logo: 'https://cdn-icons-png.flaticon.com/512/2111/2111646.png' },
-            { name: 'TikTok', logo: 'https://cdn-icons-png.flaticon.com/512/3046/3046121.png' }
+            { name: 'TikTok', logo: 'https://cdn-icons-png.flaticon.com/512/3046/3046121.png' },
+            { name: 'Pinterest', logo: 'https://cdn-icons-png.flaticon.com/512/2111/2111652.png' },
+            { name: 'WhatsApp', logo: 'https://cdn-icons-png.flaticon.com/512/733/733585.png' },
+            { name: 'Reddit', logo: 'https://cdn-icons-png.flaticon.com/512/52/52053.png' },
+            { name: 'Epic Games', logo: 'https://cdn-icons-png.flaticon.com/512/5968/5968644.png' },
+            { name: 'Spotify', logo: 'https://cdn-icons-png.flaticon.com/512/174/174868.png' },
+            { name: 'Roblox', logo: 'https://cdn-icons-png.flaticon.com/512/10304/10304443.png' },
+            { name: 'Minecraft', logo: 'https://cdn-icons-png.flaticon.com/512/10255/10255869.png' },
+            { name: 'GitHub', logo: 'https://cdn-icons-png.flaticon.com/512/25/25231.png' }
         ];
 
         const track = document.getElementById('track');
         const spinBtn = document.getElementById('spinBtn');
-        const fullItemW = 180; // 160 + 10*2
+        const cardWidth = 180; // (160 + 10 + 10)
 
         function init() {
-            // Создаем ОЧЕНЬ длинную ленту (100+ элементов)
+            // Генерируем 100+ элементов для эффекта бесконечности
             let html = '';
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 15; i++) {
                 apps.forEach(app => {
                     html += `<div class="item"><img src="${app.logo}"><span>${app.name}</span></div>`;
                 });
             }
             track.innerHTML = html;
-
-            // Смещаем ленту на середину сразу, чтобы слева не было пустоты
-            // Сдвигаем на 40 элементов вправо
-            const initialShift = -40 * fullItemW;
-            gsap.set(track, { x: initialShift });
+            // Центрируем на 50-й иконке при старте, чтобы слева было много места
+            gsap.set(track, { x: -50 * cardWidth });
         }
         init();
 
         spinBtn.addEventListener('click', () => {
-            sfx.click.play();
-            spinBtn.disabled = true;
+            // Разблокировка звука
+            sfxClick.play();
+            sfxTick.play(); sfxTick.pause();
 
+            spinBtn.disabled = true;
             const viewportW = document.querySelector('.roulette-viewport').offsetWidth;
             
-            // Выбираем случайную цель (минимум 30 иконок от текущей позиции)
-            // Добавляем 70 к текущему смещению (40 базовых + 30 новых)
-            const targetIdx = 80 + Math.floor(Math.random() * apps.length);
-            
-            // Математически точный центр
-            const finalX = -(targetIdx * fullItemW) + (viewportW / 2) - (fullItemW / 2);
+            // Выбираем случайную иконку дальше по ленте (от 90 до 105)
+            const targetIdx = 90 + Math.floor(Math.random() * apps.length);
+            const finalX = -(targetIdx * cardWidth) + (viewportW / 2) - (cardWidth / 2);
 
-            let lastT = 0;
+            let lastIdx = 0;
+
             gsap.to(track, {
                 x: finalX,
-                duration: 7,
+                duration: 8,
                 ease: "power4.out",
                 onUpdate: function() {
-                    const curX = gsap.getProperty(track, "x");
-                    const curT = Math.floor(Math.abs(curX) / fullItemW);
-                    if (curT !== lastT) {
-                        sfx.tick.currentTime = 0;
-                        sfx.tick.play();
-                        lastT = curT;
+                    const currentX = gsap.getProperty(track, "x");
+                    const currentIdx = Math.round(Math.abs(currentX / cardWidth));
+                    
+                    if (currentIdx !== lastIdx) {
+                        sfxTick.currentTime = 0;
+                        sfxTick.play().catch(()=>{});
+                        lastIdx = currentIdx;
                     }
                 },
                 onComplete: () => {
-                    sfx.win.play();
+                    sfxWin.play();
                     const app = apps[targetIdx % apps.length];
-                    openModal(app);
+                    document.getElementById('resImg').src = app.logo;
+                    document.getElementById('resTitle').innerText = app.name;
+                    document.getElementById('overlay').style.display = 'flex';
                 }
             });
         });
-
-        function openModal(app) {
-            document.getElementById('resImg').src = app.logo;
-            document.getElementById('resTitle').innerText = app.name;
-            document.getElementById('overlay').style.display = 'flex';
-            gsap.fromTo('.modal', { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: "back.out" });
-        }
-
-        const closeActions = () => {
-            sfx.click.play();
-            gsap.to('.modal', { scale: 0.5, opacity: 0, duration: 0.3, onComplete: () => {
-                location.reload(); // Перезагрузка для нового выбора
-            }});
-        };
-
-        document.getElementById('banBtn').onclick = closeActions;
-        document.getElementById('slowBtn').onclick = closeActions;
-
     </script>
 </body>
 </html>
