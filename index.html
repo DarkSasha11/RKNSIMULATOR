@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>РКН: Терминал Управления Блокировками</title>
+    <title>РКН | ЦЕНТР УПРАВЛЕНИЯ БЛОКИРОВКАМИ</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #020617;
-            --panel: rgba(15, 23, 42, 0.9);
-            --accent: #0ea5e9;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --text: #f8fafc;
+            --bg: #010409;
+            --panel: rgba(13, 17, 23, 0.95);
+            --accent: #38bdf8;
+            --danger: #f43f5e;
+            --warning: #fbbf24;
+            --text: #f0f6fc;
             --card-w: 160px; /* Ширина карточки */
-            --card-m: 10px;  /* Отступ карточки */
+            --card-m: 10px;  /* Отступ */
         }
 
         body {
@@ -26,8 +26,8 @@
             display: flex; flex-direction: column; align-items: center;
             min-height: 100vh; overflow: hidden;
             background-image: 
-                radial-gradient(circle at 50% 0%, #1e1b4b, transparent),
-                repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(14, 165, 233, 0.03) 50px);
+                radial-gradient(circle at 50% 0%, #161b22, transparent),
+                repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(56, 189, 248, 0.02) 50px);
         }
 
         header {
@@ -36,14 +36,14 @@
             z-index: 10;
         }
 
-        .rkn-logo {
-            width: 110px;
-            filter: drop-shadow(0 0 15px var(--accent));
+        /* Место для твоего логотипа Роскомнадзора */
+        .rkn-logo-custom {
+            width: 100px;
+            height: 100px;
             margin-bottom: 15px;
-            transition: transform 0.5s ease;
+            filter: drop-shadow(0 0 15px var(--accent));
+            /* Если хочешь вставить свою картинку, добавь в тег img в HTML ниже */
         }
-        
-        .rkn-logo:hover { transform: rotate(360deg) scale(1.1); }
 
         h1 {
             font-family: 'Orbitron', sans-serif;
@@ -56,7 +56,7 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* Контейнер рулетки */
+        /* Рулетка */
         .roulette-viewport {
             position: relative;
             width: 100%;
@@ -64,27 +64,26 @@
             height: 200px;
             margin: 30px 0;
             background: var(--panel);
-            border: 1px solid rgba(14, 165, 233, 0.3);
+            border: 1px solid rgba(56, 189, 248, 0.2);
             border-radius: 30px;
             display: flex;
             align-items: center;
             overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 30px rgba(14, 165, 233, 0.05);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
         }
 
         .track {
             display: flex;
             align-items: center;
             will-change: transform;
-            padding-left: 0;
         }
 
         .item {
             min-width: var(--card-w);
             height: 150px;
             margin: 0 var(--card-m);
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.07);
             border-radius: 24px;
             display: flex;
             flex-direction: column;
@@ -97,19 +96,18 @@
             width: 70px;
             height: 70px;
             object-fit: contain;
-            border-radius: 15px;
-            margin-bottom: 12px;
-            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+            border-radius: 14px;
+            margin-bottom: 10px;
         }
 
         .item span {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 800;
-            color: #94a3b8;
+            color: #8b949e;
             text-transform: uppercase;
         }
 
-        /* Красный указатель (Линия) */
+        /* Центральная линия-указатель */
         .pointer {
             position: absolute;
             left: 50%;
@@ -119,54 +117,45 @@
             background: var(--danger);
             transform: translateX(-50%);
             z-index: 20;
-            box-shadow: 0 0 25px var(--danger);
+            box-shadow: 0 0 20px var(--danger);
         }
 
-        .pointer::before {
+        .pointer::before, .pointer::after {
             content: '';
             position: absolute;
-            top: 0; left: 50%;
+            left: 50%;
             transform: translateX(-50%);
-            border-left: 12px solid transparent;
-            border-right: 12px solid transparent;
-            border-top: 18px solid var(--danger);
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
         }
+        .pointer::before { top: 0; border-top: 15px solid var(--danger); }
+        .pointer::after { bottom: 0; border-bottom: 15px solid var(--danger); }
 
-        .pointer::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 50%;
-            transform: translateX(-50%);
-            border-left: 12px solid transparent;
-            border-right: 12px solid transparent;
-            border-bottom: 18px solid var(--danger);
-        }
-
-        /* Кнопка */
+        /* Кнопка запуска */
         .spin-btn {
-            background: linear-gradient(135deg, var(--accent), #1d4ed8);
-            color: white;
+            background: var(--accent);
+            color: #010409;
             border: none;
             padding: 22px 70px;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-weight: 900;
             font-family: 'Orbitron', sans-serif;
-            border-radius: 20px;
+            border-radius: 16px;
             cursor: pointer;
-            box-shadow: 0 10px 40px rgba(14, 165, 233, 0.4);
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            margin-bottom: 50px;
+            margin-bottom: 40px;
         }
 
-        .spin-btn:hover { transform: scale(1.05) translateY(-5px); filter: brightness(1.2); }
+        .spin-btn:hover { transform: scale(1.05) translateY(-3px); filter: brightness(1.1); }
         .spin-btn:active { transform: scale(0.95); }
-        .spin-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .spin-btn:disabled { opacity: 0.5; cursor: wait; }
 
-        /* Модальное окно */
+        /* Модальное окно результата */
         .overlay {
             position: fixed;
             inset: 0;
-            background: rgba(2, 6, 23, 0.95);
+            background: rgba(0,0,0,0.92);
             backdrop-filter: blur(15px);
             display: none;
             justify-content: center;
@@ -175,70 +164,53 @@
         }
 
         .modal {
-            background: #0f172a;
+            background: #0d1117;
             padding: 50px;
-            border-radius: 40px;
+            border-radius: 35px;
             border: 2px solid var(--accent);
             text-align: center;
-            width: 90%;
-            max-width: 420px;
-            box-shadow: 0 0 80px rgba(14, 165, 233, 0.3);
-            transform: translateY(30px);
-            opacity: 0;
+            width: 380px;
+            box-shadow: 0 0 80px rgba(56, 189, 248, 0.2);
         }
 
         .modal img {
-            width: 130px;
-            height: 130px;
+            width: 120px;
+            height: 120px;
             border-radius: 25px;
-            margin-bottom: 25px;
-            border: 4px solid var(--accent);
-            padding: 10px;
-            background: rgba(255,255,255,0.05);
+            margin-bottom: 20px;
+            border: 3px solid var(--accent);
+            padding: 5px;
         }
 
         .btn-group {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-top: 35px;
+            gap: 15px;
+            margin-top: 30px;
         }
 
         .btn {
             padding: 18px;
-            border-radius: 15px;
+            border-radius: 12px;
             border: none;
             font-weight: 900;
             cursor: pointer;
-            font-family: 'Inter', sans-serif;
             font-size: 1rem;
             transition: 0.2s;
+            text-transform: uppercase;
         }
 
         .btn-ban { background: var(--danger); color: white; }
-        .btn-slow { background: var(--warning); color: black; }
-        .btn:hover { transform: translateY(-3px); filter: brightness(1.1); }
+        .btn-slow { background: var(--warning); color: #000; }
+        .btn:hover { filter: brightness(1.2); transform: translateY(-2px); }
 
-        /* Уведомление */
-        .toast {
-            position: fixed;
-            top: -100px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 20px 50px;
-            border-radius: 60px;
-            font-weight: 900;
-            z-index: 200;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            transition: 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-        }
     </style>
 </head>
 <body>
 
     <header>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Roskomnadzor_logo.svg/1024px-Roskomnadzor_logo.svg.png" class="rkn-logo">
-        <h1>СИСТЕМА ВЫБОРА</h1>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Roskomnadzor_logo.svg/1024px-Roskomnadzor_logo.svg.png" class="rkn-logo-custom">
+        <h1>TERMINAL RKN</h1>
     </header>
 
     <div class="roulette-viewport">
@@ -246,34 +218,28 @@
         <div class="track" id="track"></div>
     </div>
 
-    <button class="spin-btn" id="spinBtn" onmouseenter="playHover()">ЗАПУСТИТЬ ТЕРМИНАЛ</button>
+    <button class="spin-btn" id="spinBtn">ЗАПУСТИТЬ ВЫБОР</button>
 
     <div class="overlay" id="overlay">
         <div class="modal" id="modal">
             <img src="" id="resImg">
-            <h2 id="resTitle" style="margin:0; font-family:'Orbitron'; font-size: 1.8rem;"></h2>
-            <p style="color:#64748b; margin-top:10px; font-weight: bold;">ТРЕБУЕТСЯ ПРИНЯТИЕ МЕР</p>
+            <h2 id="resTitle" style="margin:0; font-family:'Orbitron';"></h2>
+            <p style="color:#8b949e; margin-top:10px;">ВЫБЕРИТЕ МЕРУ ПРЕСЕЧЕНИЯ</p>
             <div class="btn-group">
-                <button class="btn btn-ban" onmouseenter="playHover()" onclick="finish('ЗАБЛОКИРОВАН')">ЗАПРЕТИТЬ</button>
-                <button class="btn btn-slow" onmouseenter="playHover()" onclick="finish('ЗАМЕДЛЕН')">ЗАМЕДЛИТЬ</button>
+                <button class="btn btn-ban" id="banBtn">ЗАПРЕТИТЬ</button>
+                <button class="btn btn-slow" id="slowBtn">ЗАМЕДЛИТЬ</button>
             </div>
         </div>
     </div>
 
-    <div class="toast" id="toast"></div>
-
     <script>
-        // Аудио ресурсы
-        const audio = {
-            tick: new Audio('https://www.soundjay.com/buttons/sounds/button-50.mp3'),
-            win: new Audio('https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'),
-            hover: new Audio('https://www.soundjay.com/buttons/sounds/button-28.mp3'),
-            click: new Audio('https://www.soundjay.com/buttons/sounds/button-37.mp3')
+        // ЗВУКИ (Современные SFX)
+        const sfx = {
+            tick: new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3'),
+            win: new Audio('https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3'),
+            click: new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3')
         };
-        audio.tick.volume = 0.4;
-        audio.hover.volume = 0.2;
-
-        function playHover() { audio.hover.currentTime = 0; audio.hover.play(); }
+        sfx.tick.volume = 0.3;
 
         const apps = [
             { name: 'YouTube', logo: 'https://cdn-icons-png.flaticon.com/512/1384/1384060.png' },
@@ -281,92 +247,84 @@
             { name: 'Steam', logo: 'https://cdn-icons-png.flaticon.com/512/512/512555.png' },
             { name: 'Instagram', logo: 'https://cdn-icons-png.flaticon.com/512/2111/2111463.png' },
             { name: 'Twitch', logo: 'https://cdn-icons-png.flaticon.com/512/5968/5968819.png' },
-            { name: 'Twitter (X)', logo: 'https://cdn-icons-png.flaticon.com/512/733/733579.png' },
+            { name: 'X (Twitter)', logo: 'https://cdn-icons-png.flaticon.com/512/733/733579.png' },
             { name: 'Telegram', logo: 'https://cdn-icons-png.flaticon.com/512/2111/2111646.png' },
-            { name: 'TikTok', logo: 'https://cdn-icons-png.flaticon.com/512/3046/3046121.png' },
-            { name: 'Pinterest', logo: 'https://cdn-icons-png.flaticon.com/512/2111/2111652.png' },
-            { name: 'Facebook', logo: 'https://cdn-icons-png.flaticon.com/512/5968/5968764.png' }
+            { name: 'TikTok', logo: 'https://cdn-icons-png.flaticon.com/512/3046/3046121.png' }
         ];
 
         const track = document.getElementById('track');
         const spinBtn = document.getElementById('spinBtn');
-        const fullCardWidth = 180; // 160px + 20px (margin * 2)
+        const fullItemW = 180; // 160 + 10*2
 
-        function buildTrack() {
-            // Создаем ленту: 10 повторений списка для длины
-            const totalCopies = 15;
-            let content = '';
-            for(let i = 0; i < totalCopies; i++) {
+        function init() {
+            // Создаем ОЧЕНЬ длинную ленту (100+ элементов)
+            let html = '';
+            for (let i = 0; i < 20; i++) {
                 apps.forEach(app => {
-                    content += `<div class="item"><img src="${app.logo}"><span>${app.name}</span></div>`;
+                    html += `<div class="item"><img src="${app.logo}"><span>${app.name}</span></div>`;
                 });
             }
-            track.innerHTML = content;
+            track.innerHTML = html;
 
-            // Сдвигаем в начало, чтобы под линией был первый элемент (YouTube)
-            const initialOffset = (document.querySelector('.roulette-viewport').offsetWidth / 2) - (fullCardWidth / 2);
-            gsap.set(track, { x: initialOffset });
+            // Смещаем ленту на середину сразу, чтобы слева не было пустоты
+            // Сдвигаем на 40 элементов вправо
+            const initialShift = -40 * fullItemW;
+            gsap.set(track, { x: initialShift });
         }
-
-        buildTrack();
+        init();
 
         spinBtn.addEventListener('click', () => {
-            audio.click.play();
+            sfx.click.play();
             spinBtn.disabled = true;
 
-            const viewportWidth = document.querySelector('.roulette-viewport').offsetWidth;
-            // Выбираем случайную иконку в промежутке между 60-й и 90-й позицией
-            const targetGlobalIndex = Math.floor(Math.random() * 30) + 60;
+            const viewportW = document.querySelector('.roulette-viewport').offsetWidth;
             
-            // Расчет финальной позиции: центр экрана минус позиция иконки
-            const finalX = (viewportWidth / 2) - (targetGlobalIndex * fullCardWidth) - (fullCardWidth / 2);
+            // Выбираем случайную цель (минимум 30 иконок от текущей позиции)
+            // Добавляем 70 к текущему смещению (40 базовых + 30 новых)
+            const targetIdx = 80 + Math.floor(Math.random() * apps.length);
+            
+            // Математически точный центр
+            const finalX = -(targetIdx * fullItemW) + (viewportW / 2) - (fullItemW / 2);
 
-            let lastTickIndex = 0;
-
+            let lastT = 0;
             gsap.to(track, {
                 x: finalX,
-                duration: 8,
+                duration: 7,
                 ease: "power4.out",
                 onUpdate: function() {
-                    const currentX = gsap.getProperty(track, "x");
-                    const currentIndex = Math.round(Math.abs((currentX - (viewportWidth / 2)) / fullCardWidth));
-                    
-                    if(currentIndex !== lastTickIndex) {
-                        audio.tick.currentTime = 0;
-                        audio.tick.play();
-                        lastTickIndex = currentIndex;
+                    const curX = gsap.getProperty(track, "x");
+                    const curT = Math.floor(Math.abs(curX) / fullItemW);
+                    if (curT !== lastT) {
+                        sfx.tick.currentTime = 0;
+                        sfx.tick.play();
+                        lastT = curT;
                     }
                 },
                 onComplete: () => {
-                    audio.win.play();
-                    const finalApp = apps[targetGlobalIndex % apps.length];
-                    showResult(finalApp);
+                    sfx.win.play();
+                    const app = apps[targetIdx % apps.length];
+                    openModal(app);
                 }
             });
         });
 
-        function showResult(app) {
+        function openModal(app) {
             document.getElementById('resImg').src = app.logo;
             document.getElementById('resTitle').innerText = app.name;
             document.getElementById('overlay').style.display = 'flex';
-            gsap.to('#modal', { y: 0, opacity: 1, duration: 0.6, ease: "back.out(1.7)" });
+            gsap.fromTo('.modal', { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: "back.out" });
         }
 
-        function finish(action) {
-            audio.click.play();
-            const name = document.getElementById('resTitle').innerText;
-            document.getElementById('overlay').style.display = 'none';
+        const closeActions = () => {
+            sfx.click.play();
+            gsap.to('.modal', { scale: 0.5, opacity: 0, duration: 0.3, onComplete: () => {
+                location.reload(); // Перезагрузка для нового выбора
+            }});
+        };
 
-            const toast = document.getElementById('toast');
-            toast.innerText = `${name} ${action} ПО ВСЕЙ РОССИИ`;
-            toast.style.background = action === 'ЗАБЛОКИРОВАН' ? 'var(--danger)' : 'var(--warning)';
-            toast.style.color = action === 'ЗАБЛОКИРОВАН' ? 'white' : 'black';
-            toast.style.top = '40px';
+        document.getElementById('banBtn').onclick = closeActions;
+        document.getElementById('slowBtn').onclick = closeActions;
 
-            setTimeout(() => {
-                location.reload();
-            }, 3500);
-        }
     </script>
 </body>
 </html>
