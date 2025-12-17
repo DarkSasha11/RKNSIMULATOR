@@ -3,58 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>РКН | ЦЕНТР УПРАВЛЕНИЯ FINAL</title>
+    <title>РКН | СТАБИЛЬНЫЙ ТЕРМИНАЛ 9.0</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #010409; --panel: rgba(13, 17, 23, 0.98);
+            --bg: #010409; --panel: #0d1117;
             --accent: #38bdf8; --danger: #f43f5e;
             --warning: #fbbf24; --success: #10b981;
-            --card-w: 160px; --card-m: 10px; --step: 180px;
+            --step: 180px; /* Фиксированный шаг: 160px ширина + 20px отступы */
         }
+
+        * { box-sizing: border-box; }
 
         body {
-            margin: 0; background: var(--bg); color: #e6edf3;
-            font-family: 'Segoe UI', sans-serif; display: grid;
-            grid-template-columns: 300px 1fr 320px; height: 100vh; overflow: hidden;
-            background-image: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #010409 100%);
+            margin: 0; padding: 0; background: var(--bg); color: #e6edf3;
+            font-family: 'Segoe UI', sans-serif; height: 100vh; width: 100vw;
+            display: grid; grid-template-columns: 300px 1fr 320px;
+            overflow: hidden; /* Запрет любого скролла страницы */
         }
 
-        .side { background: var(--panel); border: 1px solid #30363d; padding: 20px; display: flex; flex-direction: column; backdrop-filter: blur(10px); }
-        .title { font-family: 'Orbitron'; font-size: 0.75rem; color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-bottom: 15px; letter-spacing: 2px; text-transform: uppercase; }
+        /* Боковые панели */
+        .side { 
+            height: 100vh; background: var(--panel); 
+            border: 1px solid #30363d; display: flex; flex-direction: column; 
+            padding: 20px; position: relative; z-index: 10;
+        }
         
-        #history, #chat { flex-grow: 1; overflow-y: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; scroll-behavior: smooth; }
-        .h-item { padding: 10px; margin-bottom: 10px; border-radius: 8px; background: #161b22; border-left: 5px solid; animation: slideIn 0.3s forwards; }
+        .title { 
+            font-family: 'Orbitron'; font-size: 0.75rem; color: var(--accent); 
+            border-bottom: 2px solid var(--accent); padding-bottom: 10px; 
+            margin-bottom: 15px; letter-spacing: 2px; text-transform: uppercase; 
+        }
+        
+        #history, #chat { 
+            flex: 1; overflow-y: auto; overflow-x: hidden;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
+        }
+
+        /* Стили элементов лога и чата */
+        .h-item { padding: 10px; margin-bottom: 10px; border-radius: 8px; background: #161b22; border-left: 5px solid; }
         .comm { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-bottom: 10px; border-left: 2px solid var(--accent); }
         .user { color: var(--accent); font-weight: bold; font-size: 0.75rem; display: block; margin-bottom: 4px; }
 
-        @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+        /* Центр */
+        main { 
+            height: 100vh; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; 
+            background: radial-gradient(circle at center, #1e1b4b 0%, #010409 100%);
+            position: relative;
+        }
 
-        main { display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 20px; }
-        .logo { width: 110px; filter: drop-shadow(0 0 20px var(--accent)); margin-bottom: 20px; transition: 0.5s; }
-        .logo:hover { transform: rotate(360deg); }
+        .logo { width: 100px; filter: drop-shadow(0 0 20px var(--accent)); margin-bottom: 20px; }
 
+        /* Рулетка */
         .viewport {
-            position: relative; width: 800px; height: 200px;
+            position: relative; width: 720px; height: 200px; /* 720 / 180 = ровно 4 карточки в ряд */
             background: #0d1117; border: 3px solid #30363d;
             border-radius: 25px; overflow: hidden; display: flex; align-items: center;
             box-shadow: inset 0 0 50px #000;
         }
 
-        .track { display: flex; will-change: transform; align-items: center; }
+        .track { display: flex; align-items: center; position: absolute; left: 0; }
+
         .item {
-            min-width: var(--card-w); height: 150px; margin: 0 var(--card-m);
+            width: 160px; height: 150px; margin: 0 10px;
             background: #161b22; border: 1px solid #30363d; border-radius: 20px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
+            flex-shrink: 0;
         }
-        .item img { width: 70px; height: 70px; border-radius: 15px; margin-bottom: 10px; pointer-events: none; }
-        .item span { font-size: 0.8rem; font-weight: 900; color: #f0f6fc; text-transform: uppercase; }
+        .item img { width: 70px; height: 70px; border-radius: 15px; margin-bottom: 10px; }
+        .item span { font-size: 0.8rem; font-weight: 900; color: #fff; text-transform: uppercase; }
 
         .pointer {
             position: absolute; left: 50%; top: 0; bottom: 0; width: 4px;
             background: var(--danger); transform: translateX(-50%); z-index: 100;
-            box-shadow: 0 0 20px var(--danger);
+            box-shadow: 0 0 20px var(--danger); pointer-events: none;
         }
 
         .btn-spin {
@@ -63,46 +87,53 @@
             font-weight: 900; cursor: pointer; transition: 0.3s; color: #000;
             font-size: 1.2rem; box-shadow: 0 0 30px rgba(56, 189, 248, 0.4);
         }
-        .btn-spin:hover { transform: scale(1.05); }
-        .btn-spin:disabled { opacity: 0.2; transform: scale(0.95); }
+        .btn-spin:hover:not(:disabled) { transform: scale(1.05); background: #fff; }
+        .btn-spin:disabled { opacity: 0.2; cursor: wait; }
 
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(15px); }
-        .modal { background: #0d1117; padding: 50px; border-radius: 40px; border: 2px solid var(--accent); text-align: center; width: 380px; box-shadow: 0 0 100px rgba(56, 189, 248, 0.2); }
+        /* Модалка */
+        .overlay { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.96); 
+            display: none; align-items: center; justify-content: center; z-index: 2000; 
+            backdrop-filter: blur(15px); 
+        }
+        .modal { 
+            background: #0d1117; padding: 40px; border-radius: 40px; 
+            border: 2px solid var(--accent); text-align: center; width: 380px; 
+        }
         .modal img { width: 120px; height: 120px; border-radius: 25px; margin-bottom: 20px; border: 3px solid var(--accent); }
-        .v-btns { display: flex; flex-direction: column; gap: 15px; margin-top: 30px; }
-        .v-btn { padding: 18px; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; font-size: 1rem; transition: 0.2s; }
+        .v-btns { display: flex; flex-direction: column; gap: 15px; margin-top: 25px; }
+        .v-btn { padding: 18px; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; }
         .v-ban { background: var(--danger); color: #fff; }
         .v-slow { background: var(--warning); color: #000; }
         .v-safe { background: var(--success); color: #fff; }
-        .v-btn:hover { filter: brightness(1.2); transform: translateY(-3px); }
     </style>
 </head>
 <body>
 
     <aside class="side">
-        <div class="title">СИСТЕМНЫЙ ЛОГ</div>
+        <div class="title">ЛОГ ПРОТОКОЛОВ</div>
         <div id="history"></div>
     </aside>
 
     <main>
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Roskomnadzor_logo.svg/1024px-Roskomnadzor_logo.svg.png" class="logo">
-        <h1 style="font-family:'Orbitron'; font-size: 1.5rem; margin:0; letter-spacing: 6px; background: linear-gradient(to right, #fff, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">RKN TERMINAL 8.0</h1>
+        <h1 style="font-family:'Orbitron'; font-size: 1.4rem; margin:0; letter-spacing: 4px;">RKN TERMINAL v9.0</h1>
         <div class="viewport">
             <div class="pointer"></div>
             <div id="track" class="track"></div>
         </div>
-        <button class="btn-spin" id="spinBtn">НАЧАТЬ ПРОВЕРКУ</button>
+        <button class="btn-spin" id="spinBtn">ЗАПУСТИТЬ СКАНЕР</button>
     </main>
 
     <aside class="side">
-        <div class="title">ОБЩЕСТВЕННЫЙ РЕЗОНАНС</div>
+        <div class="title">РЕАКЦИЯ ОБЩЕСТВА</div>
         <div id="chat"></div>
     </aside>
 
     <div class="overlay" id="overlay">
         <div class="modal">
             <img id="mImg">
-            <h2 id="mTitle" style="font-family:'Orbitron'; margin:0; font-size: 2rem;"></h2>
+            <h2 id="mTitle" style="font-family:'Orbitron'; margin:0; font-size: 1.8rem;"></h2>
             <div class="v-btns">
                 <button class="v-btn v-ban" onclick="v('ЗАБЛОКИРОВАН')">ЗАБЛОКИРОВАТЬ</button>
                 <button class="v-btn v-slow" onclick="v('ЗАМЕДЛЕН')">ЗАМЕДЛИТЬ</button>
@@ -119,7 +150,6 @@
             slow: new Audio('https://www.soundjay.com/buttons/sounds/button-20.mp3'),
             safe: new Audio('https://www.soundjay.com/clock/sounds/desk-bell-one-1.mp3')
         };
-        audio.tick.volume = 0.2;
 
         const apps = [
             { n: 'YouTube', i: 'https://cdn-icons-png.flaticon.com/512/1384/1384060.png' },
@@ -131,22 +161,24 @@
             { n: 'Spotify', i: 'https://cdn-icons-png.flaticon.com/512/174/174868.png' },
             { n: 'Reddit', i: 'https://cdn-icons-png.flaticon.com/512/52/52053.png' },
             { n: 'GitHub', i: 'https://cdn-icons-png.flaticon.com/512/25/25231.png' },
-            { n: 'Roblox', i: 'https://cdn-icons-png.flaticon.com/512/10304/10304443.png' }
+            { n: 'Roblox', i: 'https://cdn-icons-png.flaticon.com/512/10304/10304443.png' },
+            { n: 'Faceit', i: 'https://img.icons8.com/color/512/faceit.png' },
+            { n: 'Dota 2', i: 'https://img.icons8.com/color/512/dota-2.png' }
         ];
 
         const phrases = {
-            'ЗАБЛОКИРОВАН': ['За что?!', 'VPN: "Я готов"', 'Прощай!', 'Опять...', 'Жестко.', 'Минус инет', 'РКН, зачем?', 'Помянем...', 'Ухожу в оффлайн', 'Свобода, пока.'],
-            'ЗАМЕДЛЕН': ['144p навсегда', 'Грузит час...', 'Улитка и то быстрее', 'Слайд-шоу!', 'Бесит лаги!', 'Зачем?', 'Еле пашет', 'VPN в помощь', 'Аааа лагает!', 'Терпим.'],
-            'ПОМИЛОВАН': ['УРААА!', 'Живем!', 'РКН лучший!', 'Чудо!', 'Спасибо!', 'Справедливо', 'Кайф!', 'Наконец-то', 'Праздник!', 'Есссс!']
+            'ЗАБЛОКИРОВАН': ['За что?!', 'Ужас...', 'VPN мой лучший друг', 'РКН жжет', 'Минус инет', 'Опять чебурнет', 'Прощай Стим', 'Как играть-то?', 'Жесть', 'Ясно.'],
+            'ЗАМЕДЛЕН': ['Опять лаги', '144р... спасибо', 'Улитка быстрее', 'Бесит!', 'Еле грузит', 'Ну хоть так', 'Слайд-шоу', 'Грузит час', 'Зачем?', 'Эх.'],
+            'ПОМИЛОВАН': ['УРААА!', 'Живем!', 'РКН лучший сегодня', 'Красавцы!', 'Чудо!', 'Справедливо', 'Спасибо!', 'Наконец-то', 'Праздник!', 'Ессс!']
         };
 
         const track = document.getElementById('track');
         const spinBtn = document.getElementById('spinBtn');
-        const step = 180;
+        const step = 180; // card(160) + margin(20)
 
         function build() {
             let h = ''; 
-            for(let i=0; i<80; i++) {
+            for(let i=0; i<100; i++) {
                 apps.forEach(a => {
                     h += `<div class="item"><img src="${a.i}"><span>${a.n}</span></div>`;
                 });
@@ -156,22 +188,24 @@
         }
 
         spinBtn.onclick = () => {
-            audio.tick.play(); audio.tick.pause(); // Прогрев аудио
+            audio.tick.play(); audio.tick.pause();
             spinBtn.disabled = true;
             
-            const target = 100 + Math.floor(Math.random() * apps.length);
-            // ТОЧНЫЙ РАСЧЕТ: Половина вьюпорта (400) - (номер карточки * ширину) - (половина карточки)
-            const x = 400 - (target * step) - (step / 2);
+            const target = 70 + Math.floor(Math.random() * apps.length);
+            // ЦЕНТР: (Ширина вьюпорта / 2) - (Позиция иконки * шаг) - (Половина шага)
+            // 720 / 2 = 360.
+            const x = 360 - (target * step) - (step / 2);
 
-            let lastIdx = 0;
+            let lastT = 0;
             gsap.to(track, {
                 x: x, duration: 8, ease: "power4.out",
                 onUpdate: () => {
                     let curX = gsap.getProperty(track, "x");
-                    let curIdx = Math.round(Math.abs((curX - 400 + step/2) / step));
-                    if(curIdx !== lastIdx) {
+                    // Считаем индекс относительно центральной линии (360px)
+                    let curT = Math.round(Math.abs((curX - 360 + step/2) / step));
+                    if(curT !== lastT) {
                         audio.tick.currentTime = 0; audio.tick.play().catch(()=>{});
-                        lastIdx = curIdx;
+                        lastT = curT;
                     }
                 },
                 onComplete: () => {
@@ -196,16 +230,17 @@
             const color = type === 'ЗАБЛОКИРОВАН' ? 'var(--danger)' : type === 'ЗАМЕДЛЕН' ? 'var(--warning)' : 'var(--success)';
             hist.insertAdjacentHTML('afterbegin', `<div class="h-item" style="border-color:${color}"><b>${name}</b><br><span style="color:${color}">${type}</span></div>`);
             
-            for(let i=0; i<6; i++) {
+            for(let i=0; i<5; i++) {
                 setTimeout(() => {
                     const pool = phrases[type];
                     const p = pool[Math.floor(Math.random()*pool.length)];
-                    chat.insertAdjacentHTML('afterbegin', `<div class="comm"><span class="user">Гражданин_${Math.floor(Math.random()*9999)}</span>${p}</div>`);
-                    if(chat.childNodes.length > 30) chat.lastChild.remove();
+                    chat.insertAdjacentHTML('afterbegin', `<div class="comm"><span class="user">User_${Math.floor(Math.random()*999)}</span>${p}</div>`);
+                    chat.scrollTop = 0;
                 }, i * 300);
             }
 
             document.getElementById('overlay').style.display = 'none';
+            // Возврат рулетки на базу
             gsap.to(track, { x: -40 * step, duration: 1, onComplete: () => spinBtn.disabled = false });
         }
 
